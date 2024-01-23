@@ -42,31 +42,37 @@ fi
 
 function init {
 
+    TMPDIR="$HOME/tmp_$(basename $OPT_IN)"
+    rm -fr $TMPDIR
+    mkdir -p $TMPDIR
+    echo "Init: set up $TMPDIR"
+
     PACKAGE_NAME="$(basename $OPT_IN).pkgm"
-    echo "File: $PACKAGE_NAME"
+    echo "Init: package file is $TMPDIR/$PACKAGE_NAME"
+    touch $TMPDIR/$PACKAGE_NAME
+    echo "TOP=$TMPDIR" > $TMPDIR/$PACKAGE_NAME
 
-    rm -f ./$PACKAGE_NAME ./$PACKAGE_NAME.tar.gz
-    echo "Init: cleaned up $PACKAGE_NAME"
-
-    touch ./$PACKAGE_NAME
-    echo "DATE=$(date)" > $PACKAGE_NAME
-    for PKGM_DIR in $(find $OPT_IN -type d); do
-        echo "DIR=$PKGM_DIR" >> $PACKAGE_NAME
+    echo "DATE=$(date)" >> $TMPDIR/$PACKAGE_NAME
+    for PKGM_DIR in $(find $OPT_IN -type d -printf '%P\n'); do
+        echo "DIR=$PKGM_DIR" >> $TMPDIR/$PACKAGE_NAME
     done
-    for PKGM_DIR in $(find $OPT_IN -type f); do
-        echo "FILE=$PKGM_DIR" >> $PACKAGE_NAME
+    for PKGM_DIR in $(find $OPT_IN -type f -printf '%P\n'); do
+        echo "FILE=$PKGM_DIR" >> $TMPDIR/$PACKAGE_NAME
     done
-    echo "Init: directory and file structure written to ./$PACKAGE_NAME"
+    echo "Init: directory and file structure written to $TMPDIR/$PACKAGE_NAME"
 
-    tar czf $PACKAGE_NAME.tar.gz ./$(basename $OPT_IN)
-    echo "Init: created archive ./$PACKAGE_NAME.tar.gz"
+    tar czf $TMPDIR/$PACKAGE_NAME.tar.gz -C $OPT_IN .
+    echo "Init: created archive $TMPDIR/$PACKAGE_NAME.tar.gz"
 
 }
 
 function install {
 
     PACKAGE_NAME=$(echo $OPT_IN | cut -d. -f1-2)
-    echo "File: $PACKAGE_NAME"
+    TMPDIR=$(grep TOP $PACKAGE_NAME | cut -d= -f2)
+    echo "Install: set up $TMPDIR"
+    echo "Install: package file is $TMPDIR/$(basename $PACKAGE_NAME)"
+    # TODO only one target in package file
     echo "TARGET=$OPT_OUT" >> $PACKAGE_NAME
 
     # create top level dir, if not exists
@@ -75,6 +81,25 @@ function install {
 
     tar -xzf $OPT_IN -C $OPT_OUT
     echo "Install: extract archive to $OPT_OUT"
+
+}
+
+function uninstall {
+
+    PACKAGE_NAME=$OPT_IN
+    echo "Uninstall: package file is $(basename $PACKAGE_NAME)"
+
+    TARGET=$(grep TARGET $PACKAGE_NAME | cut -d= -f2)
+    echo "Uninstall: target is $TARGET"
+    cd $TARGET
+
+    for file in $(grep FILE $PACKAGE_NAME | cut -d= -f2); do
+        echo $(pwd)/$file
+        rm -f $(pwd)/$file
+    done
+    echo "Uninstall: all files removed"
+
+    #TODO remove directories
 
 }
 
