@@ -30,7 +30,7 @@ else
     exit 1
 fi
 
-if [ "$MODE" == "install" ]; then
+if [ "$MODE" == "init" ] || [ "$MODE" == "install" ]; then
     OPT_OUT=$3
     if [[ $OPT_OUT ]]; then
         echo "Opt-OUT: $OPT_OUT"
@@ -42,27 +42,22 @@ fi
 
 function init {
 
-    TMPDIR="$HOME/tmp_$(basename $OPT_IN)"
-    rm -fr $TMPDIR
-    mkdir -p $TMPDIR
-    echo "Init: set up $TMPDIR"
-
     PACKAGE_NAME="$(basename $OPT_IN).pkgm"
-    echo "Init: package file is $TMPDIR/$PACKAGE_NAME"
-    touch $TMPDIR/$PACKAGE_NAME
-    echo "TOP=$TMPDIR" > $TMPDIR/$PACKAGE_NAME
+    echo "Init: package file is $OPT_OUT/$PACKAGE_NAME"
+    touch $OPT_OUT/$PACKAGE_NAME
+    echo "TOP=$OPT_OUT" > $OPT_OUT/$PACKAGE_NAME
 
-    echo "DATE=$(date)" >> $TMPDIR/$PACKAGE_NAME
+    echo "DATE=$(date)" >> $OPT_OUT/$PACKAGE_NAME
     for PKGM_DIR in $(find $OPT_IN -type d -printf '%P\n'); do
-        echo "DIR=$PKGM_DIR" >> $TMPDIR/$PACKAGE_NAME
+        echo "DIR=$PKGM_DIR" >> $OPT_OUT/$PACKAGE_NAME
     done
     for PKGM_DIR in $(find $OPT_IN -type f -printf '%P\n'); do
-        echo "FILE=$PKGM_DIR" >> $TMPDIR/$PACKAGE_NAME
+        echo "FILE=$PKGM_DIR" >> $OPT_OUT/$PACKAGE_NAME
     done
-    echo "Init: directory and file structure written to $TMPDIR/$PACKAGE_NAME"
+    echo "Init: directory and file structure written to $OPT_OUT/$PACKAGE_NAME"
 
-    tar czf $TMPDIR/$PACKAGE_NAME.tar.gz -C $OPT_IN .
-    echo "Init: created archive $TMPDIR/$PACKAGE_NAME.tar.gz"
+    tar czf $OPT_OUT/$PACKAGE_NAME.tar.gz -C $OPT_IN .
+    echo "Init: created archive $OPT_OUT/$PACKAGE_NAME.tar.gz"
 
 }
 
