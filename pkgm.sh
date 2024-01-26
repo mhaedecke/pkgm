@@ -9,7 +9,7 @@
 #  Usage: pkgm.sh [Mode] [Archive|Package file|Source path] [Target path]      #
 #    Mode: init [Source path] - creates package file and archive               #
 #    Mode: install [Archive] [Target path] - installs archive                  #
-#    Mode: uninstall [Package file] - uninstalls package                       #
+#    Mode: uninstall [Package file] [prefix] - uninstalls package              #
 #                                                                              #
 ################################################################################
 
@@ -30,14 +30,12 @@ else
     exit 1
 fi
 
-if [ "$MODE" == "init" ] || [ "$MODE" == "install" ]; then
-    OPT_OUT=$3
-    if [[ $OPT_OUT ]]; then
-        echo "Opt-OUT: $OPT_OUT"
-    else
-        echo "Output option not set."
-        exit 1
-    fi
+OPT_OUT=$3
+if [[ $OPT_OUT ]]; then
+    echo "Opt-OUT: $OPT_OUT"
+else
+    echo "Output option not set."
+    exit 1
 fi
 
 function init {
@@ -67,8 +65,6 @@ function install {
     TMPDIR=$(grep TOP $PACKAGE_NAME | cut -d= -f2)
     echo "Install: set up $TMPDIR"
     echo "Install: package file is $TMPDIR/$(basename $PACKAGE_NAME)"
-    # TODO only one target in package file
-    echo "TARGET=$OPT_OUT" >> $PACKAGE_NAME
 
     # create top level dir, if not exists
     mkdir -p $OPT_OUT
@@ -84,9 +80,9 @@ function uninstall {
     PACKAGE_NAME=$OPT_IN
     echo "Uninstall: package file is $(basename $PACKAGE_NAME)"
 
-    TARGET=$(grep TARGET $PACKAGE_NAME | cut -d= -f2)
-    echo "Uninstall: target is $TARGET"
-    cd $TARGET
+    PREFIX=$OPT_OUT
+    echo "Uninstall: prefix is $PREFIX"
+    cd $PREFIX
 
     for file in $(grep FILE $PACKAGE_NAME | cut -d= -f2); do
         echo $(pwd)/$file
