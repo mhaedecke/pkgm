@@ -38,6 +38,15 @@ else
     exit 1
 fi
 
+function as_root {
+
+    if   [ $EUID = 0 ]; then $*
+    elif [ -x /usr/bin/sudo ]; then sudo $*
+    else su -c \\"$*\\"
+    fi
+
+}
+
 function init {
 
     PACKAGE_NAME="$(basename $OPT_IN).pkgm"
@@ -86,7 +95,11 @@ function uninstall {
 
     for file in $(grep FILE $PACKAGE_NAME | cut -d= -f2); do
         echo $(pwd)/$file
-        rm -f $(pwd)/$file
+        if [ -O $file ]; then
+            rm -f $(pwd)/$file
+        else
+            as_root rm -f $(pwd)/$file
+        fi
     done
     echo "Uninstall: all files removed"
 

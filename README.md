@@ -12,9 +12,9 @@ there are some dependencies:
 * tar
              
 usage:
-pkgm.sh [init|install|uninstall] [archive|package file|source path] [target path]   
+pkgm.sh [init|install|uninstall] [archive|package file|source path] [prefix|target path]
 
 examples:
 * creates package file and archive: pkgm.sh init [source path]
 * installs archive: pkgm.sh install [archive] [target path]
-* uninstalls package: pkgm.sh uninstall [package file]
+* uninstalls package: pkgm.sh uninstall [package file] [prefix]
