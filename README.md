@@ -34,6 +34,6 @@ make install DESTDIR=[path]
 pkgm.sh [init|install|uninstall] [archive|package file|source path] [prefix|target path]
 
 examples:
-* creates package file and archive: pkgm.sh init [source path]
+* creates package file and archive: pkgm.sh init [source path] [target path]
 * installs archive: pkgm.sh install [archive] [target path]
 * uninstalls package: pkgm.sh uninstall [package file] [prefix]
