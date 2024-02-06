@@ -7,9 +7,9 @@ finally you can manage the installed directories and files with pkgm.
 
 ## prefix configuration
 the prefix is set at configuration and is intended to be the location where the package will be installed after everything is build.
-if there are hardcoded paths in the package anywhere they would be based on the prefix path.
+if there are hardcoded paths in the package they would be based on the prefix path.
 it's only recommend to use that option if you will build the package twice and the second build use the final location.
-with a second final build you will fix hardcoded links and have a full file list of the first build.
+with a second final build you will fix hardcoded paths and get a full file list of the first build.
 
 ```
 ./configure --prefix=[path]
@@ -17,7 +17,7 @@ with a second final build you will fix hardcoded links and have a full file list
 
 ## DESTDIR installation
 DESTDIR allows you to install the package somewhere other than the prefix.
-the DESTDIR is prepended to all prefix values so that the install location has exactly the same directory structure/layout as the final location.
+DESTDIR is prepended to all prefix values so that the install location has exactly the same directory structure/layout as the final location.
 that option is recommend and offers also a full file list.
 
 ```
@@ -25,11 +25,11 @@ make install DESTDIR=[path]
 ```
 
 ## dependencies:
-* bash
-* coreutils
-* gzip
-* tar
-             
+* Bourne Again SHell - [bash](https://www.gnu.org/software/bash)
+* GNU Core Utilities - [coreutils](https://www.gnu.org/software/coreutils)
+* GNU Gzip - [gzip](https://www.gnu.org/software/gzip)
+* GNU Tar - [tar](https://www.gnu.org/software/tar)
+
 ## usage
 pkgm.sh [init|install|uninstall] [archive|package file|source path] [prefix|target path]
 
