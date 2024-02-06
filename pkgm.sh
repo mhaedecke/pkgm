@@ -109,14 +109,17 @@ function uninstall {
     cd $PREFIX
 
     OWNER="$(stat -c '%U' "$OPT_OUT")"
+    if [ "${OWNER}" != "${USER}" ]; then
+        echo "Uninstall: root mode!"
+    else
+        echo "Uninstall: user mode."
+    fi
     for file in $(grep FILE $PACKAGE_NAME | cut -d= -f2); do
-        echo $(pwd)/$file
+        echo "Uninstall: $(pwd)/$file"
         if [ "${OWNER}" != "${USER}" ]; then
             as_root rm -f $(pwd)/$file
-            echo "Uninstall: root mode!"
         else
             rm -f $(pwd)/$file
-            echo "Uninstall: user mode!"
         fi
     done
     echo "Uninstall: all files removed"
