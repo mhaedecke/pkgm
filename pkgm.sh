@@ -78,16 +78,23 @@ function init {
 
 function install {
 
-    PACKAGE_NAME=$(echo $OPT_IN | cut -d. -f1-2)
-    TMPDIR=$(grep TOP $PACKAGE_NAME | cut -d= -f2)
-    echo "Install: set up $TMPDIR"
-    echo "Install: package file is $TMPDIR/$(basename $PACKAGE_NAME)"
-
     # create top level dir, if not exists
-    mkdir -p $OPT_OUT
-    echo "Install: create top level directory"
+    if [ -d "$OPT_OUT" ]; then
+        echo "Install: target directory exists"
+    else
+        echo "Install: target directory does not exist, please create it!"
+        exit 1
+    fi
 
-    tar -xzf $OPT_IN -C $OPT_OUT
+    # extract files to target directory
+    OWNER="$(stat -c '%U' "$OPT_OUT")"
+    if [ "${OWNER}" != "${USER}" ]; then
+        as_root tar -xzf $OPT_IN -C $OPT_OUT
+        echo "Install: root mode!"
+    else
+        tar -xzf $OPT_IN -C $OPT_OUT
+        echo "Install: user mode"
+    fi
     echo "Install: extract archive to $OPT_OUT"
 
 }
