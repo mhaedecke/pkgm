@@ -95,7 +95,7 @@ function install {
         tar -xzf $OPT_IN -C $OPT_OUT
         echo "Install: user mode"
     fi
-    echo "Install: extract archive to $OPT_OUT"
+    echo "Install: extracted archive to $OPT_OUT"
 
 }
 
@@ -108,12 +108,15 @@ function uninstall {
     echo "Uninstall: prefix is $PREFIX"
     cd $PREFIX
 
+    OWNER="$(stat -c '%U' "$OPT_OUT")"
     for file in $(grep FILE $PACKAGE_NAME | cut -d= -f2); do
         echo $(pwd)/$file
-        if [ -O $file ]; then
-            rm -f $(pwd)/$file
-        else
+        if [ "${OWNER}" != "${USER}" ]; then
             as_root rm -f $(pwd)/$file
+            echo "Uninstall: root mode!"
+        else
+            rm -f $(pwd)/$file
+            echo "Uninstall: user mode!"
         fi
     done
     echo "Uninstall: all files removed"
